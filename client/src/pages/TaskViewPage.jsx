@@ -19,8 +19,10 @@ import Spinner from "../components/Spinner";
 
 const TaskViewPage = () => {
   const { taskId } = useParams();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,6 +77,7 @@ const TaskViewPage = () => {
     fetchTask();
   }, [taskId, user]);
 
+  //handle Copy Content
   const handleCopyContent = () => {
     const contentToCopy = `${task.title}\n\n${task.description || ""}`.trim();
     navigator.clipboard
@@ -83,6 +86,7 @@ const TaskViewPage = () => {
       .catch(() => toast.error("Failed to copy content"));
   };
 
+  // handle Share Task
   const handleShareTask = () => {
     const shareableLink = `${window.location.origin}/tasks/${taskId}`;
     navigator.clipboard
@@ -91,6 +95,7 @@ const TaskViewPage = () => {
       .catch(() => toast.error("Failed to copy link"));
   };
 
+  // handle Delete
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this task?")) {
       dispatch(deleteTask(taskId))
@@ -103,10 +108,12 @@ const TaskViewPage = () => {
     }
   };
 
+  // handle Edit Toggle
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
 
+  //handle Input Change
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setEditedTask((prev) => ({
@@ -115,7 +122,18 @@ const TaskViewPage = () => {
     }));
   };
 
+  //handle Save Changes
   const handleSaveChanges = () => {
+    // Get current date without time
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Check if dueDate exists and is in the past
+    if (editedTask.dueDate && new Date(editedTask.dueDate) < today) {
+      toast.error("Due date cannot be in the past");
+      return;
+    }
+
     const taskData = {
       title: editedTask.title,
       description: editedTask.description,
@@ -135,6 +153,7 @@ const TaskViewPage = () => {
       });
   };
 
+  // handle Cancel Edit
   const handleCancelEdit = () => {
     setEditedTask({
       title: task.title,
@@ -276,6 +295,7 @@ const TaskViewPage = () => {
                     name="dueDate"
                     value={editedTask.dueDate}
                     onChange={handleInputChange}
+                    min={new Date().toISOString().split("T")[0]}
                     className="w-full px-3 py-2 bg-[#0c1d22] text-white border border-[#124147] rounded focus:outline-none focus:ring-1 focus:ring-[#17b5b4]"
                   />
                 ) : (

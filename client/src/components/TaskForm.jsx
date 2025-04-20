@@ -26,6 +26,15 @@ const TaskForm = ({ taskToEdit, setTaskToEdit }) => {
       dueDate,
     };
 
+    // Get current date without time
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (dueDate && new Date(dueDate) < today) {
+      toast.error("Due date cannot be in the past");
+      return;
+    }
+
     if (taskToEdit) {
       dispatch(updateTask({ taskId: taskToEdit._id, taskData }));
       toast.success("Task Updated Successfully");
@@ -82,6 +91,7 @@ const TaskForm = ({ taskToEdit, setTaskToEdit }) => {
           type="date"
           id="dueDate"
           value={dueDate}
+          min={new Date().toISOString().split("T")[0]}
           onChange={(e) => setDueDate(e.target.value)}
           className="w-full text-black   px-3 py-2 bg-white border border-[#2b3133] rounded "
         />

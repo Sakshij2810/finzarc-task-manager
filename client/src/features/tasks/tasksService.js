@@ -56,12 +56,34 @@ const deleteTask = async (taskId, token) => {
   return taskId;
 };
 
+const updateAllTasksCompleted = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await API.patch(`/tasks/complete-all`, {}, config);
+  return response.data;
+};
+
+const updateAllTasksUncompleted = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await API.patch(`/tasks/uncomplete-all`, {}, config);
+  return response.data;
+};
+
 const tasksService = {
   getTasks,
   getSingleTask,
   createTask,
   updateTask,
   deleteTask,
+  updateAllTasksCompleted,
+  updateAllTasksUncompleted,
 };
 
 export default tasksService;

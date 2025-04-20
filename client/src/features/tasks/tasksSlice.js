@@ -64,6 +64,34 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
+export const completeAllTasks = createAsyncThunk(
+  "tasks/completeAll",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const updatedTasks = await tasksService.updateAllTasksCompleted(token);
+      return updatedTasks;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const uncompleteAllTasks = createAsyncThunk(
+  "tasks/uncompleteAll",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const updatedTasks = await tasksService.updateAllTasksUncompleted(token);
+      return updatedTasks;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const tasksSlice = createSlice({
   name: "tasks",
   initialState,
@@ -128,6 +156,38 @@ export const tasksSlice = createSlice({
         state.tasks = state.tasks.filter((task) => task._id !== action.payload);
       })
       .addCase(deleteTask.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(completeAllTasks.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(completeAllTasks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.tasks = state.tasks.map((task) => ({
+          ...task,
+          completed: true,
+        }));
+      })
+      .addCase(uncompleteAllTasks.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(uncompleteAllTasks.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(uncompleteAllTasks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.tasks = state.tasks.map((task) => ({
+          ...task,
+          completed: false,
+        }));
+      })
+      .addCase(completeAllTasks.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
