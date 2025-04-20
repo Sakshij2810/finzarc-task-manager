@@ -7,6 +7,8 @@ const {
   updateTask,
   deleteTask,
   getSingleTask,
+  completeAllTasks,
+  uncompleteAllTasks,
 } = require("../controllers/taskController");
 
 router.route("/").get(protect, getTasks).post(protect, createTask);
@@ -15,5 +17,8 @@ router
   .put(protect, updateTask)
   .delete(protect, deleteTask)
   .get(getSingleTask);
+
+router.patch("/complete-all", protect, completeAllTasks);
+router.patch("/uncomplete-all", protect, uncompleteAllTasks);
 
 module.exports = router;

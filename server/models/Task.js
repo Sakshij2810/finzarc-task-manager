@@ -14,6 +14,13 @@ const TaskSchema = new mongoose.Schema({
   },
   dueDate: {
     type: Date,
+    validate: {
+      validator: function (value) {
+        if (!value) return true; // Allow empty due dates
+        return value >= new Date().setHours(0, 0, 0, 0); // Compare with today's date
+      },
+      message: "Due date cannot be in the past",
+    },
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

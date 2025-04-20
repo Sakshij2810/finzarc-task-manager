@@ -1,8 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const colors = require("colors");
-const cors = require("cors");
+const cors = require("cors"); //For enabling Cross-Origin Resource Sharing
 const connectDB = require("./config/db");
+
+const authRoute = require("./routes/authRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 
 dotenv.config();
 
@@ -10,11 +13,11 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.use(cors()); // enables CORS in Express for all routes.
+app.use(express.json()); //Converts the JSON string into a JavaScript object.
 
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/tasks", require("./routes/taskRoutes"));
+app.use("/api/auth", authRoute);
+app.use("/api/tasks", taskRoutes);
 
 const PORT = process.env.PORT || 8080;
 
